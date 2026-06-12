@@ -1,0 +1,29 @@
+### Obtener todas las mesas y su estado
+GET http://localhost:8003/api/mesas
+Content-Type: application/json
+Authorization: Bearer 3e192d0755e2c2c91bddeb391cefbda2a018f20d
+
+###
+
+### Crear una nueva mesa (Solo Administradores)
+POST http://localhost:8003/api/mesas
+Content-Type: application/json
+Authorization: Bearer 3e192d0755e2c2c91bddeb391cefbda2a018f20d
+
+{
+    "numero_mesa": 12,
+    "capacidad": 4,
+    "ubicacion": "Terraza",
+    "estado": "disponible"
+}
+
+###
+
+### Cambiar el estado de una mesa (Ej: de 'disponible' a 'ocupada')
+PUT http://localhost:8003/api/mesas/12/estado
+Content-Type: application/json
+Authorization: Bearer 3e192d0755e2c2c91bddeb391cefbda2a018f20d
+
+{
+    "estado": "ocupada"
+}

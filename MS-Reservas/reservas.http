@@ -1,0 +1,27 @@
+### Crear una nueva reserva
+POST http://localhost:8003/api/reservas
+Content-Type: application/json
+Authorization: Bearer 3e192d0755e2c2c91bddeb391cefbda2a018f20d
+
+{
+    "fecha": "2026-06-20",
+    "hora": "19:30",
+    "cantidad_personas": 4,
+    "nombre_cliente": "Ana Gomez",
+    "telefono": "3001234567",
+    "estado": "confirmada"
+}
+
+###
+
+### Obtener todas las reservas del día
+GET http://localhost:8003/api/reservas
+Content-Type: application/json
+Authorization: Bearer 3e192d0755e2c2c91bddeb391cefbda2a018f20d
+
+###
+
+### Cancelar una reserva
+PUT http://localhost:8003/api/reservas/1/cancelar
+Content-Type: application/json
+Authorization: Bearer 3e192d0755e2c2c91bddeb391cefbda2a018f20d
