@@ -3,10 +3,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model {
-    protected $table = 'usuarios'; // Nombre de la tabla asignada
-    protected $fillable = ['usuario', 'correo', 'password', 'token', 'logged', 'session_active']; [cite: 82, 83, 225]
+class User extends Model
+{
+    // Tu tabla real se llama usuarios
+    protected $table = 'usuarios'; 
     
-    // Desactivar timestamps si la tabla dada no los tiene
-    public $timestamps = false;
+    // Activamos timestamps porque tu tabla sí tiene created_at y updated_at
+    public $timestamps = true;
+
+    protected $fillable = [
+        'nombre',
+        'correo',
+        'usuario',
+        'contrasena',
+        'rol',
+        'token',
+        'sesion_activa',
+        'estado'
+    ];
+
+    // Ocultamos la columna contrasena al retornar respuestas JSON
+    protected $hidden = [
+        'contrasena'
+    ];
 }

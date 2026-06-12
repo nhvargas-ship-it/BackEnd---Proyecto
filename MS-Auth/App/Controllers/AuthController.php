@@ -5,71 +5,111 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\User;
 
-class AuthController {
-    
-    // 8.1.1 Inicio de sesión
-    public function login(Request $request, Response $response) {
-        $data = $request->getParsedBody();
-        $usernameOrEmail = $data['usuario'] ?? '';
+class AuthController
+{
+    // 8.1.1 Inicio de Sesión
+    public function login(Request $request, Response $response): Response
+    {
+        $data = json_decode($request->getBody()->getContents(), true);
+        
+        $identificador = $data['identificador'] ?? '';
         $password = $data['password'] ?? '';
 
-        // Validar campos vacíos
-        if (empty($usernameOrEmail) || empty($password)) {
-            $response->getBody()->write(json_encode(['error' => 'Credenciales incompletas']));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        if (empty($identificador) || empty($password)) {
+            $response->getBody()->write(json_encode(['error' => 'El identificador y la contraseña son obligatorios']));
+            return $response->withStatus(400);
         }
 
-        // Buscar usuario por nombre de usuario o correo
-        $user = User::where('usuario', $usernameOrEmail)
-                    ->orWhere('correo', $usernameOrEmail)
+        // Buscamos usando tus columnas reales: usuario o correo
+        $user = User::where('usuario', $identificador)
+                    ->orWhere('correo', $identificador)
                     ->first();
 
-        // Validar credenciales (asumiendo que están en texto plano o md5/bcrypt según defina tu BD entregada)
-        if (!$user || $user->password !== $password) { [cite: 86, 92]
-            $response->getBody()->write(json_encode(['error' => 'Usuario o contraseña incorrectos'])); [cite: 92]
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+        // Validamos usando la columna contrasena
+        if (!$user || $user->contrasena !== $password) {
+            $response->getBody()->write(json_encode(['error' => 'Credenciales incorrectas']));
+            return $response->withStatus(401);
         }
 
-        // Generar un token simple
-        $token = bin2hex(random_bytes(16)); [cite: 88, 223]
+        $tokenSimple = bin2hex(random_bytes(20));
+        
+        $user->token = $tokenSimple;
+        $user->sesion_activa = 1; // Columna sesion_activa
+        $user->save();
 
-        // Actualizar estado de sesión en la base de datos
-        $user->update([
-            'token' => $token,
-            'logged' => 1,
-            'session_active' => 1
-        ]); [cite: 90, 224]
-
-        // Retornar información al frontend
-        $payload = json_encode([
+        $responseData = [
             'message' => 'Login exitoso',
-            'token' => $token,
+            'token' => $tokenSimple,
             'user' => [
                 'id' => $user->id,
-                'usuario' => $user->usuario
+                'nombre' => $user->nombre,
+                'usuario' => $user->usuario,
+                'rol' => $user->rol
             ]
-        ]); [cite: 91]
+        ];
 
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $response->getBody()->write(json_encode($responseData));
+        return $response->withStatus(200);
     }
 
-    // 8.1.2 Cierre de sesión
-    public function logout(Request $request, Response $response) {
-        // El token viene validado previamente por el Middleware y se puede rescatar de los headers
-        $token = $request->getHeaderLine('Authorization'); [cite: 96]
+    // 8.1.2 Cierre de Sesión
+    public function logout(Request $request, Response $response): Response
+    {
+        $data = json_decode($request->getBody()->getContents(), true);
+        $token = $data['token'] ?? '';
 
-        $user = User::where('token', $token)->first();
-        if ($user) {
-            // Invalida el token y limpia el estado
-            $user->update([
-                'token' => null,
-                'logged' => 0,
-                'session_active' => 0
-            ]); [cite: 97]
+        if (empty($token)) {
+            $response->getBody()->write(json_encode(['error' => 'El token es requerido para cerrar sesion']));
+            return $response->withStatus(400);
         }
 
-        $response->getBody()->write(json_encode(['message' => 'Sesión cerrada correctamente']));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $user = User::where('token', $token)->first();
+
+        if (!$user) {
+            $response->getBody()->write(json_encode(['error' => 'Token invalido o sesion no encontrada']));
+            return $response->withStatus(404);
+        }
+
+        $user->token = null;
+        $user->sesion_activa = 0;
+        $user->save();
+
+        $response->getBody()->write(json_encode(['message' => 'Sesion cerrada correctamente']));
+        return $response->withStatus(200);
+    }
+
+    // 8.1.3 Validación de Sesión
+    public function validateToken(Request $request, Response $response): Response
+    {
+        $data = json_decode($request->getBody()->getContents(), true);
+        $token = $data['token'] ?? '';
+
+        if (empty($token)) {
+            $response->getBody()->write(json_encode(['valid' => false, 'message' => 'Token no proporcionado']));
+            return $response->withStatus(400);
+        }
+
+        $user = User::where('token', $token)
+                    ->where('sesion_activa', 1)
+                    ->first();
+
+        if (!$user) {
+            $response->getBody()->write(json_encode([
+                'valid' => false, 
+                'message' => 'Usuario no autenticado o sesion expirada'
+            ]));
+            return $response->withStatus(401);
+        }
+
+        $response->getBody()->write(json_encode([
+            'valid' => true, 
+            'message' => 'Sesion activa',
+            'user' => [
+                'id' => $user->id,
+                'usuario' => $user->usuario,
+                'rol' => $user->rol
+            ]
+        ]));
+        return $response->withStatus(200);
     }
 }
