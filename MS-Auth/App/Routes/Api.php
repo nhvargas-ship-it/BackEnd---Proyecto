@@ -1,12 +1,11 @@
 <?php
 use Slim\App;
 use App\Controllers\AuthController;
-use App\Middleware\AuthMiddleware;
 
 return function (App $app) {
-    // Rutas Públicas
-    $app->post('/login', [AuthController::class, 'login']); [cite: 80]
-
-    // Rutas Protegidas (Ejemplo usando el Middleware de validación)
-    $app->post('/logout', [AuthController::class, 'logout'])->add(new AuthMiddleware()); [cite: 93]
+    // POST http://127.0.0.1:8001/login
+    $app->post('/login', [AuthController::class, 'login']);
+    
+    // POST http://127.0.0.1:8001/logout
+    $app->post('/logout', [AuthController::class, 'logout']);
 };
