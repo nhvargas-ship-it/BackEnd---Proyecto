@@ -1,0 +1,25 @@
+### Crear un nuevo pedido (Empleados)
+POST http://localhost:8002/api/pedidos
+Content-Type: application/json
+Authorization: Bearer 8df20acbb8e6f4d8921bfb6545578e6a94ffeaba
+
+{
+    "mesa": 5,
+    "cliente": "Juan Pérez",
+    "productos": [
+        {"id_producto": 1, "cantidad": 2},
+        {"id_producto": 3, "cantidad": 1}
+    ],
+    "total": 35.00
+}
+
+###
+
+### Cambiar estado de un pedido (Ej. de 'pendiente' a 'preparando')
+PUT http://localhost:8002/api/pedidos/1/estado
+Content-Type: application/json
+Authorization: Bearer 8df20acbb8e6f4d8921bfb6545578e6a94ffeaba
+
+{
+    "estado": "preparando"
+}

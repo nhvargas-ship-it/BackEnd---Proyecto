@@ -3,13 +3,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Pedido extends Model {
+class Pedido extends Model
+{
     protected $table = 'pedidos';
-    protected $fillable = ['mesa_id', 'estado', 'subtotal', 'total', 'cantidad_total'];
-    public $timestamps = false;
+    public $timestamps = true;
+    protected $fillable = ['mesa_id', 'cliente', 'total', 'estado'];
 
-    // Relación para traer los productos asignados a esta comanda
-    public function items() {
-        return $this->hasMany(PedidoProducto::class, 'pedido_id');
+    public function detalles()
+    {
+        return $this->hasMany(DetallePedido::class, 'pedido_id');
     }
 }

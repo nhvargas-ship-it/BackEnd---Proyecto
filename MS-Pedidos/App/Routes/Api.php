@@ -1,27 +1,17 @@
 <?php
-use Slim\App;
-use Slim\Routing\RouteCollectorProxy;
 use App\Controllers\PedidoController;
-use App\Middleware\AuthMiddleware;
+use App\Middleware\JsonResponseMiddleware;
+use Slim\Routing\RouteCollectorProxy;
 
-return function (App $app) {
-    // Grupo protegido para la facturación y comandas
-    $app->group('/pedidos', function (RouteCollectorProxy $group) {
+return function ($app) {
+    // Grupo de rutas para pedidos
+    $app->group('/api/pedidos', function (RouteCollectorProxy $group) {
         
-        // GET http://127.0.0.1:8004/pedidos
-        $group->get('', [PedidoController::class, 'index']); 
+        // POST http://localhost:8002/api/pedidos
+        $group->post('', [PedidoController::class, 'create']);
         
-        // POST http://127.0.0.1:8004/pedidos (Retorna el código de éxito 210)
-        $group->post('', [PedidoController::class, 'create']); 
+        // PUT http://localhost:8002/api/pedidos/{id}/estado
+        $group->put('/{id}/estado', [PedidoController::class, 'updateEstado']);
         
-        // GET http://127.0.0.1:8004/pedidos/{id}
-        $group->get('/{id}', [PedidoController::class, 'show']); 
-        
-        // PATCH http://127.0.0.1:8004/pedidos/{id}/estado (Para cocina o caja)
-        $group->patch('/{id}/estado', [PedidoController::class, 'changeState']); 
-        
-        // PUT http://127.0.0.1:8004/pedidos/{id}/items (Modificar cantidades de la comanda)
-        $group->put('/{id}/items', [PedidoController::class, 'updateItems']); 
-        
-    })->add(new AuthMiddleware());
+    })->add(new JsonResponseMiddleware());
 };
