@@ -1,24 +1,15 @@
-<?php
-use Slim\App;
-use Slim\Routing\RouteCollectorProxy;
+<<?php
 use App\Controllers\ProductoController;
-use App\Middleware\AuthMiddleware;
+use App\Middleware\JsonResponseMiddleware;
+use Slim\Routing\RouteCollectorProxy;
 
-return function (App $app) {
-    // Grupo protegido para el menú
-    $app->group('/productos', function (RouteCollectorProxy $group) {
+return function ($app) {
+    // Grupo de rutas para productos
+    $app->group('/api/productos', function (RouteCollectorProxy $group) {
+        // GET http://localhost:8001/api/productos
+        $group->get('', [ProductoController::class, 'getAll']);
         
-        // GET http://127.0.0.1:8003/productos (Soporta ?categoria=Bebidas en el Frontend)
-        $group->get('', [ProductoController::class, 'index']); 
-        
-        // POST http://127.0.0.1:8003/productos
-        $group->post('', [ProductoController::class, 'create']); 
-        
-        // PUT http://127.0.0.1:8003/productos/{id}
-        $group->put('/{id}', [ProductoController::class, 'update']); 
-        
-        // DELETE http://127.0.0.1:8003/productos/{id}
-        $group->delete('/{id}', [ProductoController::class, 'delete']); 
-        
-    })->add(new AuthMiddleware());
+        // POST http://localhost:8001/api/productos
+        $group->post('', [ProductoController::class, 'create']);
+    })->add(new JsonResponseMiddleware());
 };

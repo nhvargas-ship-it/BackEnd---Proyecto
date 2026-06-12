@@ -1,0 +1,19 @@
+### Obtener todos los productos (Menú)
+GET http://localhost:8001/api/productos
+Content-Type: application/json
+Authorization: Bearer be9b6d0a9318fa33e9c73ec195dcb1149cc4f6d7
+
+###
+
+### Crear un nuevo producto (Solo Administradores)
+POST http://localhost:8001/api/productos
+Content-Type: application/json
+Authorization: Bearer 8df20acbb8e6f4d8921bfb6545578e6a94ffeaba
+
+{
+    "nombre": "Hamburguesa Doble",
+    "descripcion": "Hamburguesa con doble carne y queso",
+    "precio": 15.50,
+    "categoria": "Comida rápida",
+    "estado": "disponible"
+}
