@@ -1,17 +1,24 @@
 {
-    "name": "restaurant/ms-pedidos",
-    "description": "Microservicio de Pedidos",
+    "name": "proyecto/ms-pedidos",
+    "description": "Microservicio de Pedidos compatible con PHP 8.0",
     "type": "project",
     "require": {
-        "php": "^8.0",
-        "slim/slim": "^4.12",
+        "slim/slim": "^4.11",
         "slim/psr7": "^1.6",
-        "illuminate/database": "^10.0",
+        "illuminate/database": "^9.0",
+        "illuminate/support": "^9.0",
         "vlucas/phpdotenv": "^5.5"
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "src/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "slim/slim-psr7": true
+        },
+        "process-timeout": 0,
+        "sort-packages": true
     }
 }

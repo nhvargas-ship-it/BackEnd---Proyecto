@@ -1,0 +1,25 @@
+# 1. Dependencias de PHP (Bloquea la carpeta vendor en cualquier nivel)
+**/vendor/
+vendor/
+
+# 2. Archivos de bloqueo de versiones de Composer (Requerido por el enunciado)
+**/composer.lock
+composer.lock
+
+# 3. Variables de entorno locales y credenciales de BD (Requerido por el enunciado)
+**/.env
+.env
+**/.env.local
+**/.env.development
+**/.env.production
+
+# 4. Archivos temporales, cachés o logs que genere Slim u otros componentes
+**/logs/
+**/*.log
+**/.phpunit.result.cache
+
+# 5. Archivos del Sistema Operativo o del Editor de Código (Opcional pero recomendado)
+.DS_Store
+Thumbs.db
+**/.vscode/
+**/.idea/
